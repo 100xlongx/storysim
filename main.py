@@ -10,7 +10,7 @@ USE_GROQ = os.getenv('USE_GROQ', 'false').lower() == 'true'
 def generate_text(prompt, model="gemma2-9b-it"):
     if USE_GROQ:
         response = generate_text_groq(prompt, model)
-        time.sleep(5)  # Wait for 5 seconds after each Groq API call
+        time.sleep(3)  # Waiting for 3 seconds between each groq call. can do 30 reqs per minute.
         return response
     else:
         return generate_text_ollama(prompt, model)
@@ -213,18 +213,36 @@ class Story:
         weathers = ["Clear", "Cloudy", "Rainy", "Stormy"]
         self.weather = random.choice(weathers)
 
+    def export_story(self, filename="story_output.txt"):
+        with open(filename, "w", encoding='utf-8') as f:
+            f.write("AI-Generated Story\n")
+            f.write("==================\n\n")
+            current_day = 1
+            for event in self.events:
+                if event.startswith("Narrator:"):
+                    if current_day > 1:
+                        f.write("\n")  # Add extra newline between days
+                    f.write(f"Day {current_day}\n")
+                    f.write("-" * 6 + "\n")
+                    current_day += 1
+                f.write(f"{event}\n")
+            f.write(f"\nFinal World State: {self.world_state}\n")
+            f.write(f"\nFinal Relationships:\n")
+            for character in self.characters.values():
+                f.write(f"{character.name}'s relationships: {character.relationships}\n")
+
 # Usage example
 story = Story()
 
-alice = Character("Alice", ["curious", "brave"], ["find treasure", "make friends"], "A young adventurer seeking excitement")
-bob = Character("Bob", ["cautious", "intelligent"], ["solve puzzles", "stay safe"], "A scholar with a secret past")
-charlie = Character("Charlie", ["mischievous", "resourceful"], ["cause chaos", "find rare artifacts"], "A cunning rogue with a heart of gold")
+# alice = Character("Alice", ["curious", "brave"], ["find treasure", "make friends"], "A young adventurer seeking excitement")
+# bob = Character("Bob", ["cautious", "intelligent"], ["solve puzzles", "stay safe"], "A scholar with a secret past")
+# charlie = Character("Charlie", ["mischievous", "resourceful"], ["cause chaos", "find rare artifacts"], "A cunning rogue with a heart of gold")
 diana = Character("Diana", ["wise", "mysterious"], ["protect nature", "uncover ancient secrets"], "An enigmatic druid with a connection to the spirit world")
 ethan = Character("Ethan", ["loyal", "strong"], ["prove his worth", "protect his friends"], "A former soldier searching for redemption")
 
-story.add_character(alice)
-story.add_character(bob)
-story.add_character(charlie)
+# story.add_character(alice)
+# story.add_character(bob)
+# story.add_character(charlie)
 story.add_character(diana)
 story.add_character(ethan)
 
@@ -235,3 +253,7 @@ for _ in range(1):  # Simulate 10 interactions
     for character in story.characters.values():
         print(f"{character.name}'s relationships: {character.relationships}")
     print("="*50 + "\n")
+
+# Export the story to a file
+story.export_story()
+print("Story has been exported to 'story_output.txt'")

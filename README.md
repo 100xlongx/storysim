@@ -9,6 +9,7 @@ This project simulates a story with multiple AI-driven characters, each with the
 - Time progression and weather changes
 - Flexible API integration (supports both Ollama and Groq)
 - Narrator for story progression
+- Story export functionality
 
 ## Requirements
 
